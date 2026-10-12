@@ -9,9 +9,9 @@ repository:
 
 provider:
   type: "github"
-  installation: "installation:github-opennetwork"
+  installation: "installation:github-nddev-technocracy-sandbox"
   repository_id: 1353975648
-  owner: "NDDev-OpenNetwork"
+  owner: "NDDev-Technocracy-Sandbox"
   name: "nremote-server"
 
 classification:
