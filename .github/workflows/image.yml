@@ -72,7 +72,7 @@ jobs:
       packages: write # ghcr.io push and the registry layer cache
     uses: NDDev-OpenNetwork/ci-workflows/.github/workflows/docker-build.yml@37a827f921f62353664fc4bcd872f05b65efe71a # 0.1.24
     with:
-      image: ghcr.io/nddev-opennetwork/nremote-server
+      image: ghcr.io/nddev-technocracy-sandbox/nremote-server
       tags: ${{ needs.plan.outputs.tags }}
       push: ${{ needs.plan.outputs.push == 'true' }}
       cache: ${{ needs.plan.outputs.cache }}

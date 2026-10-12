@@ -8,7 +8,7 @@
 
 services:
   hbbs:
-    image: ghcr.io/nddev-opennetwork/nremote-server:latest
+    image: ghcr.io/nddev-technocracy-sandbox/nremote-server:latest
     container_name: nremote-hbbs
     # -r tells clients where the relay is. It can be omitted when hbbr answers
     # on the same host at the default port 21117, because clients derive it;
@@ -31,7 +31,7 @@ services:
       start_period: 10s
 
   hbbr:
-    image: ghcr.io/nddev-opennetwork/nremote-server:latest
+    image: ghcr.io/nddev-technocracy-sandbox/nremote-server:latest
     container_name: nremote-hbbr
     # -k _ loads the key pair hbbs generated in the shared data directory.
     # Without it hbbr runs with an EMPTY key, which does not mean "no key" --

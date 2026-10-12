@@ -51,7 +51,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
           REPO: ${{ github.repository }}
-          IMAGE: ghcr.io/nddev-opennetwork/nremote-server
+          IMAGE: ghcr.io/nddev-technocracy-sandbox/nremote-server
         run: |
           set -euo pipefail
           notes=$(mktemp)

@@ -176,14 +176,14 @@ image, the working directory is `/data`.
 
 ## The container image
 
-`ghcr.io/nddev-opennetwork/nremote-server` carries `hbbs`, `hbbr` and
+`ghcr.io/nddev-technocracy-sandbox/nremote-server` carries `hbbs`, `hbbr` and
 `nremote-utils` and no supervisor. The command selects the service, so every
 flag in the tables above is passed the way it would be on a shell, and every
 environment variable is passed straight through:
 
 ```bash
 docker run -v ./data:/data -e ALWAYS_USE_RELAY=Y \
-  ghcr.io/nddev-opennetwork/nremote-server hbbs -r remote.example.com:21117
+  ghcr.io/nddev-technocracy-sandbox/nremote-server hbbs -r remote.example.com:21117
 ```
 
 The working directory inside the image is `/data`, so that is where the key
@@ -224,7 +224,7 @@ short:
 ```yaml
 services:
   hbbs:
-    image: ghcr.io/nddev-opennetwork/nremote-server:latest
+    image: ghcr.io/nddev-technocracy-sandbox/nremote-server:latest
     command: ["hbbs", "-r", "remote.example.com:21117"]
     environment:
       - ALWAYS_USE_RELAY=Y
@@ -233,7 +233,7 @@ services:
     volumes: ["./data:/data"]
     restart: unless-stopped
   hbbr:
-    image: ghcr.io/nddev-opennetwork/nremote-server:latest
+    image: ghcr.io/nddev-technocracy-sandbox/nremote-server:latest
     command: ["hbbr", "-k", "_"]
     environment:
       - SINGLE_BANDWIDTH=256
