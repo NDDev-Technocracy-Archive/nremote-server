@@ -2,19 +2,20 @@ schema_version: 1
 
 repository:
   id: "repo_01M1F9D1NQMGAEY1STJSBE909H"
-  display_name: "nremote-server"
+  display_name: nremote-server
   roles:
     - "project"
-  lifecycle: "active"
-
+  lifecycle: archived
 provider:
   type: "github"
   installation: "installation:github-opennetwork"
   repository_id: 1353975648
-  owner: "NDDev-Technocracy-OpenNetwork"
-  name: "nremote-server"
+  owner: NDDev-Technocracy-Archive
+  name: nremote-server
 
   aliases:
+    - owner: NDDev-Technocracy-OpenNetwork
+      name: nremote-server
     - owner: "NDDev-OpenNetwork"
       name: "nremote-server"
 
