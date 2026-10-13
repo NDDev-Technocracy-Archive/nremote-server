@@ -26,7 +26,7 @@ jobs:
       actions: read # CodeQL reads the workflow definitions it analyses
       contents: read
       security-events: write # CodeQL publishes its findings to code scanning
-    uses: NDDev-Technocracy-OpenNetwork/ci-workflows/.github/workflows/public-codeql.yml@93eeb2a65e98a29e9dbff7909f67c6419abff046 # commit:93eeb2a65e98a29e9dbff7909f67c6419abff046
+    uses: NDDev-Technocracy-OpenNetwork/ci-workflows/.github/workflows/public-codeql.yml@451e9170f3652c39d8387dc02c2fa02ba997cabb # commit:93eeb2a65e98a29e9dbff7909f67c6419abff046
     with:
       languages: '["rust", "actions"]'
       queries: security-and-quality
