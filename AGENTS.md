@@ -98,7 +98,7 @@ required for a host build; the image installs them itself.
 
 ## CI
 
-Every workflow calls `NDDev-OpenNetwork/ci-workflows` pinned by full SHA and
+Every workflow calls `NDDev-Technocracy-OpenNetwork/ci-workflows` pinned by full SHA and
 runs on GitHub-hosted runners. That is not a fallback — a public repository must
 never reach private self-hosted capacity, and public standard runners are
 unmetered, so there is nothing to save by routing elsewhere.

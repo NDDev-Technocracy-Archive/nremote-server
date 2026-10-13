@@ -1,6 +1,6 @@
 # nremote-server
 
-The rendezvous and relay services behind [nremote](https://github.com/NDDev-OpenNetwork/nremote),
+The rendezvous and relay services behind [nremote](https://github.com/NDDev-Technocracy-OpenNetwork/nremote),
 a self-hosted remote-desktop system.
 
 Two binaries:

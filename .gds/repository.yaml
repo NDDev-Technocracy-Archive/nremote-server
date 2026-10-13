@@ -11,8 +11,12 @@ provider:
   type: "github"
   installation: "installation:github-opennetwork"
   repository_id: 1353975648
-  owner: "NDDev-OpenNetwork"
+  owner: "NDDev-Technocracy-OpenNetwork"
   name: "nremote-server"
+
+  aliases:
+    - owner: "NDDev-OpenNetwork"
+      name: "nremote-server"
 
 classification:
   portfolios:
