@@ -1,4 +1,4 @@
-# Five advisories are held here, each with the reason it is held and a date the
+# Six advisories are held here, each with the reason it is held and a date the
 # reason expires. None of them is "we looked and it seemed fine": every entry
 # either names the code path that does not exist, or names the work that would
 # close it.
@@ -57,4 +57,16 @@ library still uses sodiumoxide's `box_` and XSalsa20-Poly1305 `secretbox` byte
 formats. There is no known vulnerability. Replacing those remaining primitives
 requires independent wire-compatibility vectors; the exception no longer
 covers Ed25519 signing. Tracked in AGENTS.md.
+"""
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0387"
+ignoreUntil = 2026-12-01
+reason = """
+`crypto-bigint` 0.5 arrives through `webrtc` -> `dtls` -> `p256` ->
+`elliptic-curve` 0.13, only under the shared library's `webrtc` feature (off,
+not enabled by this server) and its test-only dev-dependency. It is in the
+lockfile and not in any build: `cargo tree --workspace -i crypto-bigint -e normal
+--target all` prints nothing. Closing it means a new webrtc stack. The same
+claim is recorded in .cargo/audit.toml.
 """

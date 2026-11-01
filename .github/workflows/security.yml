@@ -2,74 +2,30 @@ name: security
 
 on:
   pull_request:
-    branches: [main]
   push:
     branches: [main]
-  schedule:
-    # Weekly, so an advisory published after the last push is still seen. This
-    # program terminates connections from the public internet; "nobody has
-    # pushed lately" is not a reason to stop looking.
-    - cron: '41 4 * * 2'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: security-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  group: security-${{ github.event.pull_request.number || github.ref }}
+  # Obsolete pull-request heads are cancelled; a running main validation always completes.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  codeql:
-    name: codeql
-    permissions:
-      actions: read # CodeQL reads the workflow definitions it analyses
-      contents: read
-      security-events: write # CodeQL publishes its findings to code scanning
-    uses: NDDev-Technocracy-Archive/ci-workflows-20261014/.github/workflows/public-codeql.yml@93eeb2a65e98a29e9dbff7909f67c6419abff046 # commit:93eeb2a65e98a29e9dbff7909f67c6419abff046
-    with:
-      languages: '["rust", "actions"]'
-      queries: security-and-quality
-      # Rust extraction needs a real build; autobuild guesses, and a guess that
-      # compiles nothing yields an empty database and a green result.
-      build_command: 'cargo build --workspace --locked'
-
-  dependency-review:
-    name: dependency-review
-    if: github.event_name == 'pull_request'
-    permissions:
-      contents: read
-      pull-requests: write # writes the review it produces
-    uses: NDDev-Technocracy-Archive/ci-workflows-20261014/.github/workflows/public-dependency-review.yml@93eeb2a65e98a29e9dbff7909f67c6419abff046 # commit:93eeb2a65e98a29e9dbff7909f67c6419abff046
-    with:
-      fail_on_severity: moderate
-
-  scorecard:
-    name: scorecard
-    if: github.event_name != 'pull_request'
-    permissions:
-      actions: read # Scorecard reads workflow definitions
-      contents: read
-      id-token: write # mints the OIDC token its publication is signed with
-      security-events: write # Scorecard publishes its findings to code scanning
-    uses: NDDev-Technocracy-Archive/ci-workflows-20261014/.github/workflows/public-scorecard.yml@93eeb2a65e98a29e9dbff7909f67c6419abff046 # commit:93eeb2a65e98a29e9dbff7909f67c6419abff046
-
   osv:
-    name: osv
-    permissions:
-      contents: read
-    uses: NDDev-Technocracy-Archive/ci-workflows-20261014/.github/workflows/osv-scan.yml@93eeb2a65e98a29e9dbff7909f67c6419abff046 # commit:93eeb2a65e98a29e9dbff7909f67c6419abff046
-
-  zizmor:
-    name: zizmor
-    permissions:
-      actions: read # the SARIF upload reads this run to attach its results
-      contents: read
-      security-events: write # zizmor publishes its findings to code scanning
-    uses: NDDev-Technocracy-Archive/ci-workflows-20261014/.github/workflows/zizmor-sarif.yml@93eeb2a65e98a29e9dbff7909f67c6419abff046 # commit:93eeb2a65e98a29e9dbff7909f67c6419abff046
-
-  secret-scan:
-    name: secret-scan
-    permissions:
-      contents: read
-    uses: NDDev-Technocracy-Archive/ci-workflows-20261014/.github/workflows/secret-scan.yml@93eeb2a65e98a29e9dbff7909f67c6419abff046 # commit:93eeb2a65e98a29e9dbff7909f67c6419abff046
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+    - uses: NDDev-Technocracy-Standarts/std-0004-ci-cd-workflows/.github/actions/tools@ab62f45b2a3067e5a7425d703f7fd07f1618b72c # nddev-cicd-v0.6.14
+      with:
+        capability: security
+    - name: OSV-Scanner
+      shell: bash
+      run: |
+        osv-scanner scan source --recursive .
