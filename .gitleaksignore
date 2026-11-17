@@ -1,0 +1,4 @@
+# Imported test_permanent_password_h1_storage_roundtrip uses a fixed local
+# password to prove storage encoding; it is not an account credential.
+# This fingerprint names only the original vendoring commit and test line.
+c72f4884b2237d6a9e9027527f3cdf8e0ffff2b3:libs/hbb_common/src/config/permanent_password.rs:generic-password:219

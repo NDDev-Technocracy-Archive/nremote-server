@@ -59,5 +59,9 @@ Modified by NDDev beginning 2026-09-02. Changes so far:
     their existing byte layouts, verified against the RFC 8032 Ed25519 test
     vector; malformed stored keypairs are rejected before use.
 
+  * CI source and security acquisition use shared full-commit callers and
+    project-owned commands. Existing native, platform, dependency, history,
+    code analysis and container verification remain in place.
+
 The wire protocol is unchanged. This server interoperates with clients built
 from the prior work, which is what makes an incremental migration possible.

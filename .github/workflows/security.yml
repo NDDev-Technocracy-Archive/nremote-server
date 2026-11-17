@@ -2,30 +2,24 @@ name: security
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, edited]
   push:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
   group: security-${{ github.event.pull_request.number || github.ref }}
-  # Obsolete pull-request heads are cancelled; a running main validation always completes.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   osv:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        persist-credentials: false
-    - uses: NDDev-Technocracy-Standarts/std-0004-ci-cd-workflows/.github/actions/tools@c192c6adcf22088abf456635de614d42e8fa3f8d # nddev-cicd-v0.6.20
-      with:
-        capability: security
-    - name: OSV-Scanner
-      shell: bash
-      run: |
-        osv-scanner scan source --recursive .
+    uses: NDDev-Technocracy-OpenNetwork/nddev-ci/.github/workflows/recipe.yml@98ff340ab5d2e0f62821a6ee25fd4161b87f59ba # v0.6.69
+    permissions:
+      contents: read
+    with:
+      hosted-runner: ubuntu-24.04
+      recipe: scan-dependencies
+      tool-assets: .github/osv-tools.json
+      timeout-minutes: 15

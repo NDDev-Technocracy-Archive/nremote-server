@@ -2,6 +2,7 @@ name: ci
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, edited]
   push:
     branches: [main]
   workflow_dispatch:
@@ -22,42 +23,39 @@ jobs:
     permissions:
       contents: read
     steps:
-    - name: Checkout
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+    - name: Prepare the job
+      uses: NDDev-Technocracy-OpenNetwork/nddev-ci/actions/prepare@98ff340ab5d2e0f62821a6ee25fd4161b87f59ba # v0.6.69
       with:
-        persist-credentials: false
+        managed: false
     - name: The commitlint exemption is not wider than stated
-      run: node scripts/check_commitlint_config.mjs
+      run: just test-contracts
   rust:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - uses: NDDev-Technocracy-OpenNetwork/nddev-ci/actions/prepare@98ff340ab5d2e0f62821a6ee25fd4161b87f59ba # v0.6.69
       with:
-        persist-credentials: false
+        managed: false
     - name: Select the Rust toolchain
       run: |
         rustup toolchain install stable --profile minimal --component clippy,rustfmt
         echo RUSTUP_TOOLCHAIN=stable >> "$GITHUB_ENV"
-    - uses: NDDev-Technocracy-Standarts/std-0004-ci-cd-workflows/.github/actions/hosted-cache@c192c6adcf22088abf456635de614d42e8fa3f8d # nddev-cicd-v0.6.20
-      with:
-        ecosystems: cargo
     - name: Format
       shell: bash
       run: |
-        printf 'pub const VERSION: &str = "0.0.0";\n' > src/version.rs && cargo fmt --all --check
+        just test-format
     - name: Clippy
       shell: bash
       run: |
-        cargo clippy --locked --all-targets -- -D warnings
+        just lint-rust
     - name: Build
       shell: bash
       run: |
-        cargo build --locked --all-targets
+        just build
     - name: Test
       shell: bash
       run: |
-        cargo test --locked --all-targets
+        just test
   rust-platforms:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
@@ -71,9 +69,9 @@ jobs:
       run:
         shell: bash
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - uses: NDDev-Technocracy-OpenNetwork/nddev-ci/actions/prepare@98ff340ab5d2e0f62821a6ee25fd4161b87f59ba # v0.6.69
       with:
-        persist-credentials: false
+        managed: false
     - name: Select the Rust toolchain
       run: |
         rustup toolchain install stable --profile minimal
@@ -81,49 +79,52 @@ jobs:
     - name: Test
       shell: bash
       run: |
-        cargo test --locked --all-targets
+        just test
   supply-chain:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - uses: NDDev-Technocracy-OpenNetwork/nddev-ci/actions/prepare@98ff340ab5d2e0f62821a6ee25fd4161b87f59ba # v0.6.69
       with:
-        persist-credentials: false
+        managed: false
+    - name: Prepare the declared audit tool
+      uses: NDDev-Technocracy-OpenNetwork/nddev-ci/actions/hosted-sdk@98ff340ab5d2e0f62821a6ee25fd4161b87f59ba # v0.6.69
+      with:
+        managed: false
+        tools: cargo-audit@0.23.0
     - name: Select the Rust toolchain
       run: |
         rustup toolchain install stable --profile minimal
         echo RUSTUP_TOOLCHAIN=stable >> "$GITHUB_ENV"
-    - uses: NDDev-Technocracy-Standarts/std-0004-ci-cd-workflows/.github/actions/tools@c192c6adcf22088abf456635de614d42e8fa3f8d # nddev-cicd-v0.6.20
-      with:
-        capability: rust
     - name: Supply chain
       shell: bash
       run: |
-        (cd . && cargo audit)
+        just audit-dependencies
 
   workflows:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-          fetch-depth: 0
-      - uses: NDDev-Technocracy-Standarts/std-0004-ci-cd-workflows/.github/actions/tools@c192c6adcf22088abf456635de614d42e8fa3f8d # nddev-cicd-v0.6.20
-        with:
-          capability: security
-      - name: Lint and audit workflows
-        run: |
-          actionlint
-          zizmor --offline --no-progress .github/workflows/ci.yml .github/workflows/image.yml .github/workflows/security.yml .github/workflows/codeql-scorecard.yml .github/dependabot.yml
-      - name: Scan new pull request commits, or the full history on main
-        env:
-          BASE: ${{ github.event.pull_request.base.sha }}
-          HEAD: ${{ github.event.pull_request.head.sha }}
-        run: |
-          if [ -n "$BASE" ]; then
-            gitleaks git --no-banner --redact --log-opts="$BASE..$HEAD" .
-          else
-            gitleaks git --no-banner --redact .
-          fi
+    uses: NDDev-Technocracy-OpenNetwork/nddev-ci/.github/workflows/recipe.yml@98ff340ab5d2e0f62821a6ee25fd4161b87f59ba # v0.6.69
+    permissions:
+      contents: read
+    with:
+      hosted-runner: ubuntu-24.04
+      recipe: check
+      tool-assets: .github/source-tools.json
+      timeout-minutes: 10
 
+  secrets:
+    uses: NDDev-Technocracy-OpenNetwork/nddev-ci/.github/workflows/recipe.yml@98ff340ab5d2e0f62821a6ee25fd4161b87f59ba # v0.6.69
+    permissions:
+      contents: read
+    with:
+      hosted-runner: ubuntu-24.04
+      recipe: scan-secrets
+      arguments: ${{ format('["{0}"]', github.event_name == 'pull_request' && format('{0}..{1}', github.event.pull_request.base.sha, github.event.pull_request.head.sha) || '--all') }}
+      tool-assets: .github/secret-tools.json
+      fetch-depth: 0
+      timeout-minutes: 10
+
+  merge-stops:
+    if: github.event_name == 'pull_request'
+    uses: NDDev-Technocracy-OpenNetwork/nddev-ci/.github/workflows/merge-stops.yml@98ff340ab5d2e0f62821a6ee25fd4161b87f59ba # v0.6.69
+    permissions:
+      contents: read
