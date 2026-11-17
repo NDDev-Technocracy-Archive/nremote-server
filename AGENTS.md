@@ -98,10 +98,11 @@ required for a host build; the image installs them itself.
 
 ## CI
 
-Every workflow calls `NDDev-Technocracy-OpenNetwork/ci-workflows` pinned by full SHA and
-runs on GitHub-hosted runners. That is not a fallback — a public repository must
-never reach private self-hosted capacity, and public standard runners are
-unmetered, so there is nothing to save by routing elsewhere.
+Project commands live in the justfile. Shared CI prepares tools and caches at
+full commit IDs on GitHub-hosted runners. The existing stable Rust selection,
+Linux format/Clippy/build/test, conditional macOS tests, recursive dependency
+scan, history scan, CodeQL, Scorecard, dependency review and image build remain
+separate roles. Publishing is independent of verification.
 
 ## Governance
 

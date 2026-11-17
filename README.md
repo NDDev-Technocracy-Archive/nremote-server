@@ -89,3 +89,16 @@ builds there, it builds.
 
 AGPL-3.0-or-later. See [LICENSE](LICENSE), and [NOTICE](NOTICE) for the
 attribution and the list of modifications this repository carries.
+
+## Verification commands
+
+Run `just check` for offline workflow and command-source checks. Native
+verification is `just verify`: locked Rust format, Clippy, build and tests,
+the existing commit-message controls, dependency and history scans, and the
+reference image build. `just scan-secrets BASE..HEAD` scans an exact pair of
+full commit identifiers; its default is the complete history. The existing
+advisory policies apply to the recursive root/vendor scan and Cargo audit.
+
+The CI platform job also runs the native Rust tests on macOS outside pull
+requests. CodeQL, Scorecard and dependency review keep their own workflow.
+Neither verification command publishes an image or activates a deployment.
