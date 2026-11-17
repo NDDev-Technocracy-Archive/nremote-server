@@ -7,7 +7,7 @@
 # Pinned by digest, not by tag alone. A tag is a moving pointer, and this image
 # terminates connections from the public internet: the bytes that go into it
 # should be the bytes that were reviewed.
-FROM rust:1.98-trixie@sha256:a8a5f0a1e5fe7dfe1d352591e4a1c7dd2c08fd70475cae872cf3458ba0df0546 AS build
+FROM rust:1.99-trixie@sha256:8a4e90c7946b74626488b1446f712c0fe0ed1a596cbd3d871684bc9c5433ae07 AS build
 
 # openssl-sys is reached through tokio-native-tls in the shared library, so the
 # development headers are a build input even though nothing here speaks TLS on
