@@ -2768,12 +2768,8 @@ fn is_option_can_save(
     defaults: &RwLock<HashMap<String, String>>,
     v: &str,
 ) -> bool {
-    if overwrite.read().unwrap().contains_key(k)
-        || defaults.read().unwrap().get(k).is_some_and(|x| x == v)
-    {
-        return false;
-    }
-    true
+    !(overwrite.read().unwrap().contains_key(k)
+        || defaults.read().unwrap().get(k).is_some_and(|x| x == v))
 }
 
 #[inline]
